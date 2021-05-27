@@ -1,0 +1,28 @@
+{
+  "name": "exercise-tracker-microservice",
+  "version": "0.1.0",
+  "description": "API project for FCC",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/max-severin/exercise-tracker-microservice.git"
+  },
+  "keywords": [ 
+    "node",
+    "express"
+  ],
+  "author": "Max Severin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/max-severin/exercise-tracker-microservice/issues"
+  },
+  "homepage": "https://github.com/max-severin/exercise-tracker-microservice#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  }
+}
