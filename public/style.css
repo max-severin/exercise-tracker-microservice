@@ -1,0 +1,131 @@
+:root {
+  --light-gray: #666;
+  --dark-gray: #333;
+  --white: #EEE;
+  --dodger-blue: dodgerblue;
+  --light-blue: #1e90ff3d;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+* {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: normal;
+}
+
+strong {
+  font-weight: bold;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  background: var(--dark-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  color: var(--white);
+  text-align: center;
+  padding: 5vw;
+}
+
+h1 {  
+  letter-spacing: 0.7em;
+  text-transform: uppercase;
+  font-size: 1.35em;
+  margin: 1em;
+}
+
+h3 {  
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+
+p, ul, code {
+  font-variant: all-small-caps;
+  font-size: 0.95em;
+}
+
+p {
+  margin-top: 1.5em;
+}
+
+code {
+  background-color: var(--light-blue);
+}
+
+.form-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+form {
+  margin: 10px;
+  padding: 20px;
+  max-width: 300px;
+  background-color: var(--light-gray);
+}
+
+input[type='text'],
+input[type='submit'] {
+  width: 220px;
+  text-align: center;
+  border: 1px solid var(--dark-gray);
+  margin: 5px 0;
+  padding: 10px 0;
+}
+
+input[type='text'] {
+  background-color: var(--dodger-blue);
+}
+
+input[type='text']:hover,
+input[type='text']:focus {
+  border: 1px solid var(--dodger-blue);
+}
+
+input[type='submit'] {
+  background-color: var(--dark-gray);
+  text-transform: uppercase;
+  color: var(--var-white);
+  cursor: pointer;
+  padding: 15px 0;
+}
+
+input[type='submit']:hover {
+  border: 1px solid var(--light-gray);
+}
+
+@media only screen and (max-width: 440px) {
+  body {
+    height: auto;
+  }
+
+  .form-wrapper {
+    flex-direction: column;
+  }
+
+  p {
+    margin-top: 1em;
+  }
+
+  h1 {  
+    letter-spacing: 0.25em;
+    font-size: 0.85em;
+  }
+
+  h3 {  
+    letter-spacing: 0.1em;
+    font-size: 0.65em;
+  }
+
+  p, ul, code {
+    font-size: 0.75em;
+  }
+}
