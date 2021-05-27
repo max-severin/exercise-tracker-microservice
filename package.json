@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/max-severin/exercise-tracker-microservice.git"
   },
-  "keywords": [ 
+  "keywords": [
     "node",
     "express"
   ],
