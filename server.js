@@ -48,6 +48,12 @@ app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/view/index.html`)
 });
 
+app.get('/api/users/', async (req, res) => {
+  const users = await userModel.find();
+
+  res.json(users);
+});
+
 app.post('/api/users/', async (req, res) => {
   try {
     const existedUser = await userModel.findOne({
