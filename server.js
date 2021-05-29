@@ -150,7 +150,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
             _id: existedUser._id,
             username: existedUser.username,
             description: description,
-            duration: duration,
+            duration: parseInt(duration),
             date: dateValid.toDateString(),
           });
         } else {
