@@ -30,6 +30,11 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema({
   username: { type: String, required: true },
+  exercises: [{
+    description: { type: String, required: true },
+    duration: { type: Number, required: true },
+    date: { type: Date, required: true },
+  }],
 });
 
 const userModel = mongoose.model('user', userSchema);
@@ -57,7 +62,7 @@ app.get('/api/users/', async (req, res) => {
 app.post('/api/users/', async (req, res) => {
   try {
     const existedUser = await userModel.findOne({
-      username: req.body.username
+      username: req.body.username,
     });
     
     if (existedUser) {
@@ -66,7 +71,8 @@ app.post('/api/users/', async (req, res) => {
       });
     } else {
       const newUser = new userModel({
-        username: req.body.username
+        username: req.body.username,
+        exercises: [],
       });
 
       await newUser.save();
@@ -76,6 +82,51 @@ app.post('/api/users/', async (req, res) => {
         username: newUser.username,
       });
     }
+  } catch(error) {
+    res.status(500).json({
+      error,
+      message: 'Server error'
+    });
+  }
+});
+
+app.post('/api/users/:_id/exercises', (req, res) => {
+  try {
+    const { description, duration, date } = req.body;
+
+    let dateValid = new Date();
+
+    if (typeof date !== 'undefined' && date !== '' && new Date(date) !== 'Invalid Date') {
+      dateValid = new Date(date);
+    }
+    
+    const newExercise = {
+      description: description,
+      duration: parseInt(duration),
+      date: dateValid,
+    };
+    
+    userModel.findOneAndUpdate(
+      { _id: req.params._id }, 
+      { $push: { exercises: newExercise } },
+      { new: true },
+      function(error, existedUser) {
+        if (error) return console.error(error);
+
+        if (existedUser) {
+          res.json({
+            _id: existedUser._id,
+            username: existedUser.username,
+            description: description,
+            duration: duration,
+            date: dateValid.toDateString(),
+          });
+        } else {
+          res.status(404).json({
+            message: 'User id is not found'
+          });
+        }
+    });
   } catch(error) {
     res.status(500).json({
       error,
