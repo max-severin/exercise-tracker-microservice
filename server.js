@@ -90,6 +90,38 @@ app.post('/api/users/', async (req, res) => {
   }
 });
 
+app.get('/api/users/:_id/logs', async (req, res) => {
+  try {    
+    userModel.findOne(
+      { _id: req.params._id }, 
+      function(error, existedUser) {
+        if (error) return console.error(error);
+
+        if (existedUser) {
+          res.json({
+            _id: existedUser._id,
+            username: existedUser.username,
+            count: existedUser.exercises.length,
+            log: existedUser.exercises.map((exercise) => ({
+              description: exercise.description,
+              duration: exercise.duration,
+              date: exercise.date,
+            })),
+          });
+        } else {
+          res.status(404).json({
+            message: 'User id is not found'
+          });
+        }
+    });
+  } catch(error) {
+    res.status(500).json({
+      error,
+      message: 'Server error'
+    });
+  }
+});
+
 app.post('/api/users/:_id/exercises', (req, res) => {
   try {
     const { description, duration, date } = req.body;
