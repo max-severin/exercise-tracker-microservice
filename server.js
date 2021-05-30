@@ -8,15 +8,6 @@ const port = 3000;
 require('dotenv').config();
 
 
-
-mongoose.connect(
-  process.env.MONGO_URI, 
-  { 
-    useNewUrlParser: true, 
-    useUnifiedTopology: true,
-  }
-);
-
 mongoose.connection.on(
   'error', 
   console.error.bind(console, 'connection error:')
@@ -25,6 +16,23 @@ mongoose.connection.on(
 mongoose.connection.once('open', () => {
   console.log('MongoDB database connection established successfully');
 });
+
+const connectDb = async () => {
+  try {
+    await mongoose.connect(
+      process.env.MONGO_URI, 
+      { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+      }
+    );
+  } catch(error) {
+    console.error(error);
+  }
+};
+
+connectDb();
 
 const { Schema } = mongoose;
 
@@ -92,28 +100,24 @@ app.post('/api/users/', async (req, res) => {
 
 app.get('/api/users/:_id/logs', async (req, res) => {
   try {    
-    userModel.findOne(
-      { _id: req.params._id }, 
-      function(error, existedUser) {
-        if (error) return console.error(error);
+    const existedUser = await userModel.findOne({ _id: req.params._id });
 
-        if (existedUser) {
-          res.json({
-            _id: existedUser._id,
-            username: existedUser.username,
-            count: existedUser.exercises.length,
-            log: existedUser.exercises.map((exercise) => ({
-              description: exercise.description,
-              duration: exercise.duration,
-              date: exercise.date,
-            })),
-          });
-        } else {
-          res.status(404).json({
-            message: 'User id is not found'
-          });
-        }
-    });
+    if (existedUser) {
+      res.json({
+        _id: existedUser._id,
+        username: existedUser.username,
+        count: existedUser.exercises.length,
+        log: existedUser.exercises.map((exercise) => ({
+          description: exercise.description,
+          duration: exercise.duration,
+          date: exercise.date,
+        })),
+      });
+    } else {
+      res.status(404).json({
+        message: 'User id is not found'
+      });
+    }
   } catch(error) {
     res.status(500).json({
       error,
@@ -122,7 +126,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
   }
 });
 
-app.post('/api/users/:_id/exercises', (req, res) => {
+app.post('/api/users/:_id/exercises', async (req, res) => {
   try {
     const { description, duration, date } = req.body;
 
@@ -138,27 +142,25 @@ app.post('/api/users/:_id/exercises', (req, res) => {
       date: dateValid,
     };
     
-    userModel.findOneAndUpdate(
+    const existedUser = await userModel.findOneAndUpdate(
       { _id: req.params._id }, 
       { $push: { exercises: newExercise } },
-      { new: true },
-      function(error, existedUser) {
-        if (error) return console.error(error);
+      { new: true }
+    );
 
-        if (existedUser) {
-          res.json({
-            _id: existedUser._id,
-            username: existedUser.username,
-            description: description,
-            duration: parseInt(duration),
-            date: dateValid.toDateString(),
-          });
-        } else {
-          res.status(404).json({
-            message: 'User id is not found'
-          });
-        }
-    });
+    if (existedUser) {
+      res.json({
+        _id: existedUser._id,
+        username: existedUser.username,
+        description: description,
+        duration: parseInt(duration),
+        date: dateValid.toDateString(),
+      });
+    } else {
+      res.status(404).json({
+        message: 'User id is not found'
+      });
+    }
   } catch(error) {
     res.status(500).json({
       error,
