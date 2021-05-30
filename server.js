@@ -100,18 +100,61 @@ app.post('/api/users/', async (req, res) => {
 
 app.get('/api/users/:_id/logs', async (req, res) => {
   try {    
-    const existedUser = await userModel.findOne({ _id: req.params._id });
+    const { from, to, limit } = req.query;
 
+    let filterObj = {};
+    
+    if (limit || from || to) {
+      filterObj = { 
+        exercises: {}
+      };
+
+      if (limit) {
+        filterObj.exercises.$slice = [
+          0, parseInt(limit)
+        ];
+      }
+
+      if (from || to) {
+        filterObj.exercises.$filter = {
+          input: "$exercises",
+          as: "exercise",
+          cond: {
+            $and: []
+          }
+        };
+
+        if (from) {
+          filterObj.exercises.$filter.cond.$and.push({ 
+            $gte: ["$$exercise.date", new Date(from)] 
+          });
+        }
+
+        if (to) {
+          filterObj.exercises.$filter.cond.$and.push({ 
+            $lte: ["$$exercise.date", new Date(to)]
+          });
+        }
+      }
+    }
+
+    const existedUser = await userModel.findOne(
+      { _id: req.params._id },
+      filterObj,
+    );
+    
     if (existedUser) {
+      const exercises = existedUser.exercises.map((exercise) => ({
+        description: exercise.description,
+        duration: exercise.duration,
+        date: exercise.date,
+      }));
+
       res.json({
         _id: existedUser._id,
         username: existedUser.username,
         count: existedUser.exercises.length,
-        log: existedUser.exercises.map((exercise) => ({
-          description: exercise.description,
-          duration: exercise.duration,
-          date: exercise.date,
-        })),
+        log: exercises,
       });
     } else {
       res.status(404).json({
